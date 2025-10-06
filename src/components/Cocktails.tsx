@@ -10,7 +10,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Cocktails: React.FC = () => {
   useGSAP(() => {
-    // Subtle parallax effects for cocktail leaves that work with the global video
     const parallaxTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: '#cocktails',
@@ -24,14 +23,11 @@ const Cocktails: React.FC = () => {
       .to('#c-left-leaf', { x: -50, y: 50, ease: 'none' }, 0)
       .to('#c-right-leaf', { x: 50, y: 50, ease: 'none' }, 0);
 
-    // Refresh ScrollTrigger after setup
     ScrollTrigger.refresh();
   }, []);
 
   return (
     <section id="cocktails" >
-      {/* If these images live in /public/images, referencing by path is fine. 
-          Using next/image keeps TS/Next happy and gives optimization. */}
       <Image
         src="/images/cocktail-left-leaf.png"
         alt="left leaf"

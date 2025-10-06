@@ -19,13 +19,10 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ videoRef }) => {
   const root = useRef<HTMLDivElement | null>(null);
 
-  // react-responsive runs client-side; fine for a client component.
   const isMobile = useMediaQuery({ maxWidth: 767 });
 
   useGSAP(
     () => {
-      // Scope all selectors to this component instance
-      // so multiple <Hero /> don't clash.
       const titleSel = gsap.utils.selector(root)('.title');
       const subtitleSel = gsap.utils.selector(root)('.subtitle');
       const rightLeafSel = gsap.utils.selector(root)('.right-leaf');
@@ -33,16 +30,13 @@ const Hero: React.FC<HeroProps> = ({ videoRef }) => {
       const arrowSel = gsap.utils.selector(root)('.arrow');
       const videoSel = gsap.utils.selector(root)('video');
 
-      // SplitText instances
       const heroSplit = new SplitText(titleSel, { type: 'chars,words' }) as any;
       const paragraphSplit = new SplitText(subtitleSel, { type: 'lines' }) as any;
 
-      // Apply text-gradient class before animating
       (heroSplit.chars as HTMLElement[]).forEach((char: HTMLElement) => {
         char.classList.add('text-gradient');
       });
 
-      // Entrances
       gsap.from(heroSplit.chars, {
         yPercent: 100,
         duration: 1.8,
@@ -59,12 +53,10 @@ const Hero: React.FC<HeroProps> = ({ videoRef }) => {
         delay: 1,
       });
 
-      // Global video scrub timeline that spans the entire page
       const video = videoRef.current;
       const onLoaded = () => {
         if (!video) return;
         
-        // Create a global video timeline that spans from hero to end of cocktails
         const globalVideoTimeline = gsap.timeline({
           scrollTrigger: {
             trigger: 'main',
@@ -75,13 +67,11 @@ const Hero: React.FC<HeroProps> = ({ videoRef }) => {
           },
         });
 
-        // Animate video currentTime as user scrolls through entire page
         globalVideoTimeline.to(video, { 
           currentTime: video.duration, 
           ease: 'none' 
         });
 
-        // Hero section parallax effects
         const heroParallaxTimeline = gsap.timeline({
           scrollTrigger: {
             trigger: '#hero',
@@ -96,28 +86,23 @@ const Hero: React.FC<HeroProps> = ({ videoRef }) => {
           .to(leftLeafSel, { y: -200, ease: 'none' }, 0)
           .to(arrowSel, { y: 100, ease: 'none' }, 0);
 
-        // Refresh ScrollTrigger after setup
         ScrollTrigger.refresh();
       };
 
       if (video) {
-        // If already loaded (e.g., from cache), run immediately
         if (video.readyState >= 1) onLoaded();
         video.addEventListener('loadedmetadata', onLoaded, { once: true });
       }
 
-      // Cleanup: revert SplitText & listeners when unmounting
       return () => {
         try {
           paragraphSplit.revert && paragraphSplit.revert();
           heroSplit.revert && heroSplit.revert();
         } catch {
-          // ignore
         }
         if (video) {
           video.removeEventListener('loadedmetadata', onLoaded);
         }
-        // Kill all ScrollTriggers for this component
         ScrollTrigger.getAll().forEach(trigger => {
           if (trigger.trigger === root.current) {
             trigger.kill();
@@ -125,7 +110,7 @@ const Hero: React.FC<HeroProps> = ({ videoRef }) => {
         });
       };
     },
-    { scope: root, dependencies: [isMobile] } // re-run if breakpoint flips
+    { scope: root, dependencies: [isMobile] } 
   );
 
   return (
@@ -151,8 +136,7 @@ const Hero: React.FC<HeroProps> = ({ videoRef }) => {
         />
 
         <div className="body">
-          {/* <Image src="/images/arrow.png" alt="arrow" className="arrow" width={64} height={64} /> */}
-
+          
           <div className="content">
             <div className="space-y-5 hidden md:block">
               <p>Cool. Crisp. Classic.</p>
